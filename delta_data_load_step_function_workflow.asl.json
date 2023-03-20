@@ -1,0 +1,57 @@
+{
+  "Comment": "A Hello World example of the Amazon States Language using Pass states",
+  "StartAt": "Create Replication Instance",
+  "States": {
+    "Create Replication Instance": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:042966178169:function:DMS_create_replication_instance",
+      "Next": "Wait for Replication Instance to Setup"
+    },
+    "Wait for Replication Instance to Setup": {
+      "Type": "Wait",
+      "Seconds": 960,
+      "Next": "Checking Availability of Replication Instance"
+    },
+    "Checking Availability of Replication Instance": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:042966178169:function:DMS_wait_till_replication_instance_created",
+      "Next": "Testing the Endpoint-Replication Instance Connection"
+    },
+    "Testing the Endpoint-Replication Instance Connection": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:042966178169:function:DMS_test_replication_instance_connection",
+      "Next": "Create a Replication Task"
+    },
+    "Create a Replication Task": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:042966178169:function:DMS_create_replication_task",
+      "Next": "Start a Replication Task"
+    },
+    "Start a Replication Task": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:042966178169:function:DMS_start_replication_task",
+      "Next": "Check Replication Task Status"
+    },
+    "Check Replication Task Status": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:042966178169:function:DMS_check_task_status",
+      "Next": "Delete Replication Task"
+    },
+    "Delete Replication Task":{
+     "Type": "Task",
+     "Resource": "arn:aws:lambda:us-east-1:042966178169:function:DMS_delete_task",
+     "Next": "Modify FilterValue in DynamoDB Table"
+    },
+    "Modify FilterValue in DynamoDB Table":{
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:042966178169:function:DMS_modifying_filtervalue",
+      "Next": "Delete Replication Instance"
+    },
+    "Delete Replication Instance":{
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:042966178169:function:DMS_delete_replication_instance",
+      "End": true
+    }
+      
+  }
+}
